@@ -1,0 +1,10 @@
+POST http://localhost:8080/expense
+content-type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRleHR1c2VyQGdtYWlsLmNvbSIsImV4cCI6MTc0MDgyMzEyMywidXNlcklkIjoxfQ.11ZKBtzQ2mrcM6U60okpu-xmToMzIqzxVbSzBMLWzOo
+
+{
+    "amount": 100,
+    "description": "Toast",
+    "category": "Breakfast",
+    "date": "2025-02-28T15:30:30Z"
+}

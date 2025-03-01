@@ -18,8 +18,9 @@ func SignUp(context *gin.Context){
 	}
 
 	_, err = user.Save()
+
 	if err != nil{
-		context.JSON(http.StatusBadRequest, gin.H{"message":"Could not save User!"})
+		context.JSON(http.StatusInternalServerError, gin.H{"message":"Could not save User!"})
 		return
 	}
 
@@ -27,17 +28,17 @@ func SignUp(context *gin.Context){
 
 }
 
-func Login(context *gin.Context){
+func Login(context *gin.Context) {
 	var user models.User
 
 	err := context.ShouldBindJSON(&user)
-	if err != nil{
+	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse data"})
 		return
 	}
 
 	err = user.ValidateCred()
-	if err != nil{
+	if err != nil {
 		if err.Error() == "user not found" {
 			context.JSON(http.StatusNotFound, gin.H{"message": "User not found!"})
 			return
@@ -51,8 +52,7 @@ func Login(context *gin.Context){
 
 	token, err := utils.GenerateToken(user.Email, user.Id)
 	if err != nil{
-		context.JSON(http.StatusInternalServerError, gin.H{"message":"could not authenticate user!"})
-		return
+		context.JSON(http.StatusInternalServerError, gin.H{"message":"could not authinticate user!"})
 	}
 
 	context.JSON(http.StatusOK, gin.H{
