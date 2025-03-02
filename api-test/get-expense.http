@@ -1,0 +1,23 @@
+### Get All Expenses
+GET http://localhost:8080/expenses
+Authorization: 
+
+### Get All Expenses (Last 30 Days - Default)
+GET http://localhost:8080/expenses
+Authorization: 
+
+### Get Expenses (Last 7 Days)
+GET http://localhost:8080/expenses?range=week
+Authorization: 
+
+### Get Expenses (Last 30 Days)
+GET http://localhost:8080/expenses?range=month
+Authorization: 
+
+### Get Expenses (Last 3 Months)
+GET http://localhost:8080/expenses?range=3months
+Authorization: 
+
+### Get Expenses (Custom Date Range)
+GET http://localhost:8080/expenses?start=2024-01-01&end=2024-02-20
+Authorization: 

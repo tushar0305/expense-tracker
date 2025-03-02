@@ -1,8 +1,8 @@
 package models
 
 import (
-	"time"
 	"fmt"
+	"time"
 	"github.com/tushar0305/expense-tracker/db"
 )
 
@@ -45,4 +45,38 @@ func (e *Expense) Save() error {
 
     return nil
 }
+
+func GetExpensesByUser(userID int64, startDate time.Time, endDate time.Time) ([]Expense, error) {
+	if db.Db == nil {
+		return nil, fmt.Errorf("database connection is not initialized")
+	}
+
+	query := `SELECT id, amount, category, date, description, userId 
+			  FROM expenses 
+			  WHERE userId = ? AND date BETWEEN ? AND ? 
+			  ORDER BY date DESC`
+
+	rows, err := db.Db.Query(query, userID, startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var expenses []Expense
+	for rows.Next() {
+		var expense Expense
+		err := rows.Scan(&expense.Id, &expense.Amount, &expense.Category, &expense.Date, &expense.Description, &expense.UserId)
+		if err != nil {
+			return nil, err
+		}
+		expenses = append(expenses, expense)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return expenses, nil
+}
+
 

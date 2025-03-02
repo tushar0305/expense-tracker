@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/tushar0305/expense-tracker/models"
 )
@@ -37,8 +38,54 @@ if err != nil {
 	})
 }
 
-func ListExpense(context *gin.Context) {
+func GetExpenses(context *gin.Context) {
+	userId, exists := context.Get("userId")
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "User not authorized"})
+		return
+	}
 
+	userID := userId.(int64)
+
+	// Default range last 30 days
+	startDate := time.Now().AddDate(0, 0, -30)
+	endDate := time.Now()
+
+	// Checking for filters in query parameters
+	dateRange := context.Query("range")
+	startParam := context.Query("start")
+	endParam := context.Query("end")
+
+	switch dateRange {
+	case "week":
+		startDate = time.Now().AddDate(0, 0, -7)
+	case "month":
+		startDate = time.Now().AddDate(0, -1, 0)
+	case "3months":
+		startDate = time.Now().AddDate(0, -3, 0)
+	}
+
+	// If custom range is provided, override defaults
+	if startParam != "" && endParam != "" {
+		parsedStart, err1 := time.Parse("2006-01-02", startParam)
+		parsedEnd, err2 := time.Parse("2006-01-02", endParam)
+		if err1 == nil && err2 == nil {
+			startDate = parsedStart
+			endDate = parsedEnd
+		} else {
+			context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid date format. Use YYYY-MM-DD."})
+			return
+		}
+	}
+
+	// Fetching expenses from database
+	expenses, err := models.GetExpensesByUser(userID, startDate, endDate)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch expenses", "error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, expenses)
 }
 
 func UpdateExpense(context *gin.Context) {

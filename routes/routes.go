@@ -12,9 +12,8 @@ func RegisterRoutes(server *gin.Engine) {
 	authenticated := server.Group("/")
     authenticated.Use(middlewares.Authenticate)
 
-	authenticated.GET("/expenses", ListExpense)
+	authenticated.GET("/expenses", GetExpenses)
 	authenticated.POST("/expense", CreateExpense)
 	authenticated.PUT("/expenses/:id", UpdateExpense)
 	authenticated.DELETE("/expenses/:id", DeleteExpense)
-
 }
