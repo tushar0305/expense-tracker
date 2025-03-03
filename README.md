@@ -1,13 +1,13 @@
 # Expense Tracker API
 
 ## About the Project
-This is a expense tracker API built using Golang and Gin. The API allows users to create, retrieve, update, and delete expenses while ensuring authentication using JWT.
+This is an expense tracker API built using Golang and Gin. The API allows users to create, retrieve, update, and delete expenses while ensuring authentication using JWT.
 
 ## Prerequisites
 - Go 1.18+
 - SQLite (or another configured database)
 - VS Code or any code editor
-- REST client (like VS Code REST Client extension or Postman)
+- REST Client extension in VS Code (for testing API requests)
 
 ## Project Setup
 1. Clone the repository:
@@ -59,7 +59,7 @@ Content-Type: application/json
 #### Create Expense
 ```http
 POST http://localhost:8080/expense
-Authorization: Bearer your_jwt_token
+Authorization: your_jwt_token
 Content-Type: application/json
 
 {
@@ -73,13 +73,13 @@ Content-Type: application/json
 #### Get Expenses
 ```http
 GET http://localhost:8080/expenses?range=week
-Authorization: Bearer your_jwt_token
+Authorization: your_jwt_token
 ```
 
 #### Update Expense
 ```http
 PUT http://localhost:8080/expenses/1
-Authorization: Bearer your_jwt_token
+Authorization: your_jwt_token
 Content-Type: application/json
 
 {
@@ -93,14 +93,10 @@ Content-Type: application/json
 #### Delete Expense
 ```http
 DELETE http://localhost:8080/expenses/1
-Authorization: Bearer your_jwt_token
+Authorization: your_jwt_token
 ```
 
 ## Running and Testing in VS Code
-1. Open VS Code and install the REST Client extension.
-2. Create a new `.http` file.
-3. Copy and paste the above API requests into the `.http` file.
-4. Send requests directly from VS Code.
+- The project includes a folder with `.http` files for testing API requests.
+- Open the folder after running `go run main.go` and use the **REST Client** extension in VS Code to send requests.
 
-## License
-This project is open-source under the MIT License.
