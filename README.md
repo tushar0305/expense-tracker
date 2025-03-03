@@ -4,7 +4,7 @@
 This is an expense tracker API built using Golang and Gin. The API allows users to create, retrieve, update, and delete expenses while ensuring authentication using JWT.
 
 ## Project URL
-https://github.com/tushar0305/expense-tracker.git
+https://roadmap.sh/projects/expense-tracker-api
 
 ## Prerequisites
 - Go 1.18+
