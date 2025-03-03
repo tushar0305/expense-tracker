@@ -1,0 +1,10 @@
+PUT http://localhost:8080/expense/2
+Content-Type: application/json
+Authorization: 
+
+{
+  "amount": 1000,
+  "category": "Groceries",
+  "description": "Supermarket shopping",
+  "date": "2006-05-02T15:04:05Z"
+}

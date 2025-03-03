@@ -14,6 +14,6 @@ func RegisterRoutes(server *gin.Engine) {
 
 	authenticated.GET("/expenses", GetExpenses)
 	authenticated.POST("/expense", CreateExpense)
-	authenticated.PUT("/expenses/:id", UpdateExpense)
-	authenticated.DELETE("/expenses/:id", DeleteExpense)
+	authenticated.PUT("/expense/:id", UpdateExpenseById)
+	authenticated.DELETE("/expense/:id", DeleteExpenseById)
 }

@@ -3,7 +3,9 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/tushar0305/expense-tracker/models"
 )
@@ -12,11 +14,11 @@ func CreateExpense(context *gin.Context) {
 	var expense models.Expense
 
 	err := context.ShouldBindJSON(&expense)
-if err != nil {
-    fmt.Println("JSON Binding Error:", err)
-    context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data", "error": err.Error()})
-    return
-}
+	if err != nil {
+		fmt.Println("JSON Binding Error:", err)
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data", "error": err.Error()})
+		return
+	}
 
 
 	userId, exists := context.Get("userId")
@@ -88,11 +90,80 @@ func GetExpenses(context *gin.Context) {
 	context.JSON(http.StatusOK, expenses)
 }
 
-func UpdateExpense(context *gin.Context) {
+func UpdateExpenseById(context *gin.Context) {
+	userId, exists := context.Get("userId")
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "User not authorized"})
+		return
+	}
+	userID := userId.(int64)
+
+	expenseID, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid expense ID"})
+		return
+	}
+
+	existingExpense, err := models.GetExpenseByID(expenseID)
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"message": "Expense not found"})
+		return
+	}
+
+	if existingExpense.UserId != userID {
+		context.JSON(http.StatusForbidden, gin.H{"message": "Not authorized to update this expense"})
+		return
+	}
+
+	var updatedExpense models.Expense
+	if err := context.ShouldBindJSON(&updatedExpense); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body", "error": err.Error()})
+		return
+	}
+
+	existingExpense.Amount = updatedExpense.Amount
+	existingExpense.Category = updatedExpense.Category
+	existingExpense.Description = updatedExpense.Description
+	existingExpense.Date = updatedExpense.Date
+
+	if err := existingExpense.Update(); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to update expense"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Expense updated successfully"})
 
 }
 
-func DeleteExpense(context *gin.Context) {
+func DeleteExpenseById(context *gin.Context) {
+	userId, exists := context.Get("userId")
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "User not authorized"})
+		return
+	}
+	userID := userId.(int64)
 
+	expenseID, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid expense ID"})
+		return
+	}
+
+	existingExpense, err := models.GetExpenseByID(expenseID)
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"message": "Expense not found"})
+		return
+	}
+	if existingExpense.UserId != userID {
+		context.JSON(http.StatusForbidden, gin.H{"message": "Not authorized to delete this expense"})
+		return
+	}
+
+	if err := models.DeleteExpense(expenseID); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete expense"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Expense deleted successfully"})
 }
 
